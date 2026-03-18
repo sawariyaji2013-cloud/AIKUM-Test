@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AIKUM SSC Offline Game</title>
+<style>
+body {font-family: Arial; background:#0c1b2a; color:white; text-align:center;}
+.box {background:#1e3a5f; padding:20px; margin:20px auto; width:330px; border-radius:10px;}
+button {margin:8px; padding:10px; width:90%; background:orange; border:none; color:white;}
+input, textarea {padding:10px; margin:5px; width:90%;}
+</style>
+</head>
+
+<body>
+
+<h2>AIKUM SSC Learning Game 🎯</h2>
+
+<div class="box" id="start">
+<input id="name" placeholder="Name"><br>
+<input id="village" placeholder="Village"><br>
+<button onclick="startGame()">Start Game</button>
+<button onclick="showAdmin()">Admin Panel</button>
+</div>
+
+<div class="box" id="game" style="display:none;">
+<h3 id="q"></h3>
+<button onclick="ans(0)" id="o0"></button>
+<button onclick="ans(1)" id="o1"></button>
+<button onclick="ans(2)" id="o2"></button>
+<button onclick="ans(3)" id="o3"></button>
+<h3 id="timer"></h3>
+<h3 id="score"></h3>
+</div>
+
+<div class="box" id="result" style="display:none;"></div>
+
+<div class="box" id="admin" style="display:none;">
+<h3>Admin Panel</h3>
+
+<input id="aq" placeholder="Question"><br>
+<input id="a1" placeholder="Option 1"><br>
+<input id="a2" placeholder="Option 2"><br>
+<input id="a3" placeholder="Option 3"><br>
+<input id="a4" placeholder="Option 4"><br>
+<input id="ans" placeholder="Answer Index (0-3)"><br>
+<button onclick="addQ()">Add Single Question</button>
+
+<hr>
+
+<h3>Bulk Upload (एक बार में सभी सवाल)</h3>
+<textarea id="bulkData" placeholder="यहाँ सभी सवाल डालें (| से अलग करें, हर लाइन में एक सवाल)"></textarea>
+<button onclick="bulkAdd()">Bulk Add Questions</button>
+
+<button onclick="location.reload()">Back</button>
+</div>
+
+<script>
+let player="", village="";
+let questions = JSON.parse(localStorage.getItem("questions")) || [
+{q:"भारत की राजधानी?", o:["मुंबई","दिल्ली","कोलकाता","चेन्नई"], a:1}
+];
+
+let i=0, score=0, t=10, timer;
+
+function startGame(){
+player = document.getElementById("name").value;
+village = document.getElementById("village").value;
+
+if(player==""||village==""){alert("Name & Village डालें"); return;}
+
+document.getElementById("start").style.display="none";
+document.getElementById("game").style.display="block";
+loadQ();
+}
+
+function loadQ(){
+let q=questions[i];
+document.getElementById("q").innerText=q.q;
+for(let x=0;x<4;x++){
+document.getElementById("o"+x).innerText=q.o[x];
+}
+document.getElementById("score").innerText="Score: "+score;
+
+startTimer();
+}
+
+function startTimer(){
+t=10;
+timer=setInterval(()=>{
+t--;
+document.getElementById("timer").innerText="Time: "+t;
+if(t==0){clearInterval(timer); next();}
+},1000);
+}
+
+function ans(x){
+clearInterval(timer);
+if(x==questions[i].a) score++;
+next();
+}
+
+function next(){
+i++;
+if(i<questions.length) loadQ();
+else end();
+}
+
+function rank(s){
+if(s==questions.length) return "🏆 Topper";
+if(s>=2) return "🥈 Good";
+return "📘 Beginner";
+}
+
+function save(){
+let data=JSON.parse(localStorage.getItem("scores"))||[];
+data.push({name:player, village:village, score:score});
+localStorage.setItem("scores",JSON.stringify(data));
+}
+
+function leaderboard(){
+let data=JSON.parse(localStorage.getItem("scores"))||[];
+let vdata=data.filter(d=>d.village==village);
+vdata.sort((a,b)=>b.score-a.score);
+
+let html="<h3>🏅 "+village+" Leaderboard</h3>";
+vdata.slice(0,5).forEach((d,i)=>{
+html+=`<p>${i+1}. ${d.name} - ${d.score}</p>`;
+});
+return html;
+}
+
+function end(){
+save();
+document.getElementById("game").style.display="none";
+document.getElementById("result").style.display="block";
+
+document.getElementById("result").innerHTML=
+`<h2>Game Over 🎉</h2>
+<h3>${player}</h3>
+<h3>Village: ${village}</h3>
+<h3>Score: ${score}</h3>
+<h3>Rank: ${rank(score)}</h3>
+${leaderboard()}
+<button onclick="location.reload()">Play Again</button>`;
+}
+
+function showAdmin(){
+let pass=prompt("Admin Password?");
+if(pass!="1234"){alert("Wrong Password"); return;}
+
+document.getElementById("start").style.display="none";
+document.getElementById("admin").style.display="block";
+}
+
+function addQ(){
+let q=document.getElementById("aq").value;
+let o1=document.getElementById("a1").value;
+let o2=document.getElementById("a2").value;
+let o3=document.getElementById("a3").value;
+let o4=document.getElementById("a4").value;
+let a=document.getElementById("ans").value;
+
+let data=JSON.parse(localStorage.getItem("questions"))||[];
+data.push({q:q, o:[o1,o2,o3,o4], a:Number(a)});
+localStorage.setItem("questions",JSON.stringify(data));
+
+alert("Question Added ✅");
+}
+
+// 🔥 BULK ADD FUNCTION
+function bulkAdd(){
+let text=document.getElementById("bulkData").value;
+let lines=text.split("\n");
+
+let data=JSON.parse(localStorage.getItem("questions"))||[];
+
+lines.forEach(line=>{
+let parts=line.split("|");
+
+if(parts.length==6){
+data.push({
+q:parts[0].trim(),
+o:[parts[1].trim(),parts[2].trim(),parts[3].trim(),parts[4].trim()],
+a:Number(parts[5].trim())
+});
+}
+});
+
+localStorage.setItem("questions",JSON.stringify(data));
+alert("✅ सभी सवाल एक साथ add हो गए!");
+}
+</script>
+
+</body>
+</html>
