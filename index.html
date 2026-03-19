@@ -1,136 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AIKUM SSC Offline Game</title>
+<title>AIKUM SSC Game</title>
 
 <style>
-body {font-family: Arial; background:#0c1b2a; color:white; text-align:center; margin:0; padding:0;}
-.logo {margin-top:10px;}
-.logo img {width:100%; max-width:600px; height:auto; display:block; margin:0 auto; border-radius:10px;}
-h2 {font-size:1.8em; margin:10px 0;}
-.box {background:#1e3a5f; padding:25px 20px; margin:20px auto; width:90%; max-width:400px; border-radius:10px;}
-button {margin:10px 0; padding:15px; width:95%; background:orange; border:none; color:white; font-size:1.1em; border-radius:8px;}
-input, textarea {padding:12px; margin:5px 0; width:95%; font-size:1em; border-radius:6px;}
-#q {font-size:1.4em; margin-bottom:15px; word-wrap: break-word; line-height:1.4em;}
-#timer, #score {font-size:1.2em; margin-top:10px;}
+body {font-family: Arial; background:#0c1b2a; color:white; text-align:center;}
+.box {background:#1e3a5f; padding:20px; margin:20px auto; width:90%; max-width:400px; border-radius:10px;}
+button {margin:10px 0; padding:15px; width:95%; background:orange; border:none; color:white;}
+#q {font-size:1.3em;}
 </style>
-
 </head>
 
 <body>
-
-<!-- 🔥 POSTER HERE -->
-<div class="banner">
-<img src="poster.jpg">
-</div>
 
 <h2>AIKUM SSC Learning Game 🎯</h2>
 
 <div class="box" id="start">
 <input id="name" placeholder="Name"><br>
 <input id="village" placeholder="Village"><br>
-<button onclick="startGame()">Start Game</button>
-<button onclick="showAdmin()">Admin Panel</button>
+<button onclick="startGame()">Start</button>
 </div>
 
 <div class="box" id="game" style="display:none;">
-  <h3 id="q"></h3> <!-- यहाँ question बड़ा और wrap होगा -->
-  <button onclick="ans(0)" id="o0"></button>
-  <button onclick="ans(1)" id="o1"></button>
-  <button onclick="ans(2)" id="o2"></button>
-  <button onclick="ans(3)" id="o3"></button>
-  <h3 id="timer"></h3>
-  <h3 id="score"></h3>
+<h3 id="q"></h3>
+<button onclick="ans(0)" id="o0"></button>
+<button onclick="ans(1)" id="o1"></button>
+<button onclick="ans(2)" id="o2"></button>
+<button onclick="ans(3)" id="o3"></button>
+<h3 id="timer"></h3>
+<h3 id="score"></h3>
 </div>
 
 <div class="box" id="result" style="display:none;"></div>
 
-<div class="box" id="admin" style="display:none;">
-<h3>Admin Panel</h3>
-
-<input id="aq" placeholder="Question"><br>
-<input id="a1" placeholder="Option 1"><br>
-<input id="a2" placeholder="Option 2"><br>
-<input id="a3" placeholder="Option 3"><br>
-<input id="a4" placeholder="Option 4"><br>
-<input id="ans" placeholder="Answer Index (0-3)"><br>
-<button onclick="addQ()">Add Single Question</button>
-
-<hr>
-
-<h3>Bulk Upload</h3>
-<textarea id="bulkData" placeholder="यहाँ सभी सवाल डालें (| से अलग करें)"></textarea>
-<button onclick="bulkAdd()">Bulk Add Questions</button>
-
-<button onclick="location.reload()">Back</button>
-</div>
-
 <script>
-let player="", village="";
+
+// 🔥 200 QUESTIONS READY
 let questions = [
-/* 🔹 EASY (1–70) */
 {q:"भारत की राजधानी?",o:["मुंबई","दिल्ली","कोलकाता","चेन्नई"],a:1},
 {q:"राष्ट्रीय पशु?",o:["हाथी","शेर","बाघ","घोड़ा"],a:2},
-{q:"2+2?",o:["3","4","5","6"],a:1},
+{q:"2+2=?",o:["3","4","5","6"],a:1},
 {q:"10 का वर्ग?",o:["50","100","150","200"],a:1},
 {q:"सूर्य किस दिशा में उगता है?",o:["पश्चिम","उत्तर","पूर्व","दक्षिण"],a:2},
-{q:"पानी का सूत्र?",o:["CO2","H2O","O2","NaCl"],a:1},
-{q:"राष्ट्रीय पक्षी?",o:["कौआ","मोर","तोता","कबूतर"],a:1},
-{q:"भारत का ध्वज रंग?",o:["2","3","4","5"],a:1},
-{q:"CPU क्या है?",o:["इनपुट","आउटपुट","प्रोसेसर","मेमोरी"],a:2},
-{q:"Mouse क्या है?",o:["इनपुट","आउटपुट","स्टोरेज","कुछ नहीं"],a:0},
-
-/* 🔹 MEDIUM (71–140) */
-{q:"संविधान लागू कब?",o:["1947","1950","1949","1952"],a:1},
-{q:"लोकसभा कार्यकाल?",o:["5","6","4","3"],a:0},
-{q:"राज्यसभा कार्यकाल?",o:["6","5","4","3"],a:0},
+{q:"संविधान लागू कब हुआ?",o:["1947","1950","1949","1952"],a:1},
 {q:"गुरुत्वाकर्षण किसने खोजा?",o:["न्यूटन","आइंस्टीन","गैलीलियो","केप्लर"],a:0},
 {q:"बल का SI मात्रक?",o:["जूल","न्यूटन","वाट","ओम"],a:1},
-{q:"ऊर्जा का SI मात्रक?",o:["जूल","वाट","न्यूटन","पास्कल"],a:0},
-{q:"ISRO कहाँ?",o:["दिल्ली","बेंगलुरु","मुंबई","चेन्नई"],a:1},
-{q:"GDP क्या है?",o:["आय","उत्पादन","कुल उत्पादन","कर"],a:2},
-{q:"Repo Rate कौन तय करता?",o:["RBI","सरकार","बैंक","SEBI"],a:0},
 {q:"UNO मुख्यालय?",o:["लंदन","न्यूयॉर्क","पेरिस","जिनेवा"],a:1},
-
-/* 🔹 HARD (141–200) */
-{q:"अनुच्छेद 370 किससे जुड़ा?",o:["पंजाब","जम्मू-कश्मीर","गुजरात","राजस्थान"],a:1},
-{q:"प्लासी का युद्ध?",o:["1757","1761","1857","1526"],a:0},
-{q:"ट्रॉपिक ऑफ कैंसर कितने राज्यों से?",o:["6","7","8","9"],a:2},
-{q:"सबसे बड़ा महासागर?",o:["अटलांटिक","प्रशांत","हिंद","आर्कटिक"],a:1},
-{q:"न्यूटन का पहला नियम?",o:["जड़त्व","बल","गति","ऊर्जा"],a:0},
-{q:"Binary base?",o:["2","10","8","16"],a:0},
-{q:"Hexadecimal base?",o:["16","2","8","10"],a:0},
-{q:"HTTP क्या है?",o:["Protocol","Language","Code","None"],a:0},
-{q:"Firewall क्या है?",o:["Security","Virus","Code","None"],a:0},
-{q:"AI क्या है?",o:["Machine intelligence","Human","None","Both"],a:0},
-
-/* 🔥 बाकी AUTO GENERATED MIX (loop style) */
+{q:"CPU क्या है?",o:["इनपुट","आउटपुट","प्रोसेसर","मेमोरी"],a:2}
 ];
 
-// 🔥 AUTO ADD करके 200 पूरे करें
-for(let x=1;x<=180;x++){
+// 🔥 AUTO FILL TO 200
+for(let i=1;i<=190;i++){
 questions.push({
-q:"SSC Practice Question "+x+"?",
+q:"SSC Question "+i+"?",
 o:["Option A","Option B","Option C","Option D"],
 a:Math.floor(Math.random()*4)
 });
 }
-{q:"भारत की राजधानी?", o:["मुंबई","दिल्ली","कोलकाता","चेन्नई"], a:1}
-];
 
+// VARIABLES
 let i=0, score=0, t=10, timer;
+let player="", village="";
 
+// START
 function startGame(){
-player = document.getElementById("name").value;
-village = document.getElementById("village").value;
+player=document.getElementById("name").value;
+village=document.getElementById("village").value;
 
 if(player==""||village==""){alert("Name & Village डालें"); return;}
 
+questions.sort(()=>Math.random()-0.5);
+
 document.getElementById("start").style.display="none";
 document.getElementById("game").style.display="block";
+
 loadQ();
 }
 
+// LOAD QUESTION
 function loadQ(){
 let q=questions[i];
 document.getElementById("q").innerText=q.q;
@@ -140,9 +87,11 @@ document.getElementById("o"+x).innerText=q.o[x];
 }
 
 document.getElementById("score").innerText="Score: "+score;
+
 startTimer();
 }
 
+// TIMER
 function startTimer(){
 t=10;
 timer=setInterval(()=>{
@@ -156,46 +105,22 @@ next();
 },1000);
 }
 
+// ANSWER
 function ans(x){
 clearInterval(timer);
 if(x==questions[i].a) score++;
 next();
 }
 
+// NEXT
 function next(){
 i++;
 if(i<questions.length) loadQ();
 else end();
 }
 
-function rank(s){
-if(s==questions.length) return "🏆 Topper";
-if(s>=2) return "🥈 Good";
-return "📘 Beginner";
-}
-
-function save(){
-let data=JSON.parse(localStorage.getItem("scores"))||[];
-data.push({name:player, village:village, score:score});
-localStorage.setItem("scores",JSON.stringify(data));
-}
-
-function leaderboard(){
-let data=JSON.parse(localStorage.getItem("scores"))||[];
-let vdata=data.filter(d=>d.village==village);
-
-vdata.sort((a,b)=>b.score-a.score);
-
-let html="<h3>🏅 "+village+" Leaderboard</h3>";
-vdata.slice(0,5).forEach((d,i)=>{
-html+=`<p>${i+1}. ${d.name} - ${d.score}</p>`;
-});
-return html;
-}
-
+// END
 function end(){
-save();
-
 document.getElementById("game").style.display="none";
 document.getElementById("result").style.display="block";
 
@@ -204,60 +129,9 @@ document.getElementById("result").innerHTML=
 <h3>${player}</h3>
 <h3>Village: ${village}</h3>
 <h3>Score: ${score}</h3>
-<h3>Rank: ${rank(score)}</h3>
-${leaderboard()}
 <button onclick="location.reload()">Play Again</button>`;
 }
 
-function showAdmin(){
-let pass=prompt("Admin Password?");
-if(pass!="1234"){
-alert("Wrong Password");
-return;
-}
-
-document.getElementById("start").style.display="none";
-document.getElementById("admin").style.display="block";
-}
-
-function addQ(){
-let q=document.getElementById("aq").value;
-let o1=document.getElementById("a1").value;
-let o2=document.getElementById("a2").value;
-let o3=document.getElementById("a3").value;
-let o4=document.getElementById("a4").value;
-let a=document.getElementById("ans").value;
-
-let data=JSON.parse(localStorage.getItem("questions"))||[];
-
-data.push({q:q, o:[o1,o2,o3,o4], a:Number(a)});
-
-localStorage.setItem("questions",JSON.stringify(data));
-
-alert("Question Added ✅");
-}
-
-function bulkAdd(){
-let text=document.getElementById("bulkData").value;
-let lines=text.split("\n");
-
-let data=JSON.parse(localStorage.getItem("questions"))||[];
-
-lines.forEach(line=>{
-let parts=line.split("|");
-
-if(parts.length==6){
-data.push({
-q:parts[0].trim(),
-o:[parts[1].trim(),parts[2].trim(),parts[3].trim(),parts[4].trim()],
-a:Number(parts[5].trim())
-});
-}
-});
-
-localStorage.setItem("questions",JSON.stringify(data));
-alert("✅ सभी सवाल add हो गए!");
-}
 </script>
 
 </body>
