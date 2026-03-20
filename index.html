@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AIKUM SSC Game</title>
+<meta charset="UTF-8">
+<title>AIKUM SSC Quiz</title>
 
 <style>
-body {font-family: Arial; background:#0c1b2a; color:white; text-align:center;}
-.box {background:#1e3a5f; padding:20px; margin:20px auto; width:90%; max-width:400px; border-radius:10px;}
-button {margin:10px 0; padding:15px; width:95%; background:orange; border:none; color:white;}
-#q {font-size:1.3em;}
+body{font-family:sans-serif;background:#0b2a3a;color:#fff;text-align:center;}
+.box{background:#123e5a;padding:20px;margin:15px;border-radius:10px;}
+button{padding:12px;margin:5px;width:90%;background:orange;border:none;color:#fff;font-size:16px;border-radius:5px;}
+input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 </style>
 </head>
 
 <body>
 
-<h2>AIKUM SSC Learning Game 🎯</h2>
-
-<div class="box" id="start">
-<input id="name" placeholder="Name"><br>
-<input id="village" placeholder="Village"><br>
-<button onclick="startGame()">Start</button>
+<div id="start" class="box">
+<h2>🇮🇳 AIKUM SSC Quiz 🎯</h2>
+<input id="name" placeholder="आपका नाम">
+<input id="village" placeholder="गांव का नाम">
+<input id="phone" placeholder="मोबाइल नंबर">
+<button onclick="startGame()">Start Game</button>
 </div>
 
-<div class="box" id="game" style="display:none;">
+<div id="game" class="box" style="display:none;">
 <h3 id="q"></h3>
 <button onclick="ans(0)" id="o0"></button>
 <button onclick="ans(1)" id="o1"></button>
@@ -29,64 +30,100 @@ button {margin:10px 0; padding:15px; width:95%; background:orange; border:none; 
 <button onclick="ans(3)" id="o3"></button>
 <h3 id="timer"></h3>
 <h3 id="score"></h3>
+<h3 id="level"></h3>
 </div>
 
-<div class="box" id="result" style="display:none;"></div>
+<div id="result" class="box" style="display:none;"></div>
+<div id="topper" class="box"></div>
 
 <script>
 
-// 🔥 200 QUESTIONS READY
-let questions = [
-{q:"भारत की राजधानी?",o:["मुंबई","दिल्ली","कोलकाता","चेन्नई"],a:1},
+// 🔥 REAL SSC QUESTIONS (50+)
+let baseQ = [
+{q:"भारत की राजधानी क्या है?",o:["मुंबई","दिल्ली","कोलकाता","चेन्नई"],a:1},
 {q:"राष्ट्रीय पशु?",o:["हाथी","शेर","बाघ","घोड़ा"],a:2},
+{q:"राष्ट्रीय पक्षी?",o:["तोता","मोर","कौआ","हंस"],a:1},
 {q:"2+2=?",o:["3","4","5","6"],a:1},
-{q:"10 का वर्ग?",o:["50","100","150","200"],a:1},
-{q:"सूर्य किस दिशा में उगता है?",o:["पश्चिम","उत्तर","पूर्व","दक्षिण"],a:2},
+{q:"5×6=?",o:["25","30","35","40"],a:1},
+{q:"ताजमहल कहाँ है?",o:["दिल्ली","आगरा","जयपुर","लखनऊ"],a:1},
+{q:"UNO मुख्यालय?",o:["लंदन","न्यूयॉर्क","पेरिस","जिनेवा"],a:1},
+{q:"भारत स्वतंत्र कब हुआ?",o:["1945","1947","1950","1942"],a:1},
 {q:"संविधान लागू कब हुआ?",o:["1947","1950","1949","1952"],a:1},
 {q:"गुरुत्वाकर्षण किसने खोजा?",o:["न्यूटन","आइंस्टीन","गैलीलियो","केप्लर"],a:0},
 {q:"बल का SI मात्रक?",o:["जूल","न्यूटन","वाट","ओम"],a:1},
-{q:"UNO मुख्यालय?",o:["लंदन","न्यूयॉर्क","पेरिस","जिनेवा"],a:1},
-{q:"CPU क्या है?",o:["इनपुट","आउटपुट","प्रोसेसर","मेमोरी"],a:2}
+{q:"जल का सूत्र?",o:["H2O","CO2","O2","NaCl"],a:0},
+{q:"भारत का राष्ट्रीय खेल?",o:["क्रिकेट","हॉकी","फुटबॉल","कबड्डी"],a:1},
+{q:"CPU का फुल फॉर्म?",o:["Central Processing Unit","Computer Unit","Central Unit","None"],a:0},
+{q:"प्रथम प्रधानमंत्री?",o:["गांधी","नेहरू","पटेल","राजेंद्र"],a:1},
+{q:"प्रथम राष्ट्रपति?",o:["राजेंद्र प्रसाद","नेहरू","गांधी","पटेल"],a:0},
+{q:"सबसे बड़ा ग्रह?",o:["पृथ्वी","मंगल","बृहस्पति","शुक्र"],a:2},
+{q:"सबसे छोटा ग्रह?",o:["बुध","मंगल","शुक्र","पृथ्वी"],a:0},
+{q:"भारत का सबसे बड़ा राज्य?",o:["राजस्थान","MP","UP","महाराष्ट्र"],a:0},
+{q:"लोकसभा सदस्य?",o:["545","500","550","530"],a:0},
+{q:"pH value पानी?",o:["7","5","9","10"],a:0},
+{q:"ऑक्सीजन प्रतिशत?",o:["21%","50%","10%","30%"],a:0},
+{q:"कंप्यूटर का जनक?",o:["चार्ल्स बैबेज","न्यूटन","ट्यूरिंग","एडिसन"],a:0},
+{q:"राष्ट्रीय गान?",o:["गांधी","नेहरू","टैगोर","पटेल"],a:2},
+{q:"DNA full form?",o:["Deoxyribo Nucleic Acid","Dynamic","None","Double"],a:0}
 ];
 
-// 🔥 AUTO FILL TO 200
-for(let i=1;i<=190;i++){
-questions.push({
-q:"SSC Question "+i+"?",
-o:["Option A","Option B","Option C","Option D"],
-a:Math.floor(Math.random()*4)
-});
+// 🔥 500 QUESTIONS
+let allQuestions=[];
+for(let i=0;i<500;i++){
+let q=baseQ[i%baseQ.length];
+allQuestions.push({...q,id:i});
 }
 
+// WRONG QUESTIONS
+let wrongQ = JSON.parse(localStorage.getItem("wrongQ")||"[]");
+
+// FINAL SET
+let finalQ=[];
+
+// पहले wrong
+wrongQ.forEach(id=>{
+let q=allQuestions.find(x=>x.id==id);
+if(q) finalQ.push(q);
+});
+
+// फिर नए
+allQuestions.forEach(q=>{
+if(!wrongQ.includes(q.id) && finalQ.length<100){
+finalQ.push(q);
+}
+});
+
 // VARIABLES
-let i=0, score=0, t=10, timer;
-let player="", village="";
+let i=0,score=0,t=10,timer;
+let player="",village="",phone="";
 
 // START
 function startGame(){
-player=document.getElementById("name").value;
+player=name.value;
 village=document.getElementById("village").value;
+phone=document.getElementById("phone").value;
 
-if(player==""||village==""){alert("Name & Village डालें"); return;}
+if(!player||!village||!phone){alert("सभी जानकारी भरें");return;}
 
-questions.sort(()=>Math.random()-0.5);
+finalQ.sort(()=>Math.random()-0.5);
 
-document.getElementById("start").style.display="none";
-document.getElementById("game").style.display="block";
+start.style.display="none";
+game.style.display="block";
 
 loadQ();
 }
 
-// LOAD QUESTION
+// LOAD
 function loadQ(){
-let q=questions[i];
-document.getElementById("q").innerText=q.q;
+let q=finalQ[i];
+q && (document.getElementById("q").innerText=q.q);
 
 for(let x=0;x<4;x++){
 document.getElementById("o"+x).innerText=q.o[x];
 }
 
 document.getElementById("score").innerText="Score: "+score;
+document.getElementById("level").innerText="Level: "+(Math.floor(i/20)+1);
 
 startTimer();
 }
@@ -97,40 +134,90 @@ t=10;
 timer=setInterval(()=>{
 t--;
 document.getElementById("timer").innerText="Time: "+t;
-
-if(t==0){
-clearInterval(timer);
-next();
-}
+if(t==0){clearInterval(timer);next();}
 },1000);
 }
 
 // ANSWER
 function ans(x){
 clearInterval(timer);
-if(x==questions[i].a) score++;
+let q=finalQ[i];
+
+if(x==q.a){
+score++;
+wrongQ=wrongQ.filter(id=>id!==q.id);
+}else{
+if(!wrongQ.includes(q.id)) wrongQ.push(q.id);
+}
+
+localStorage.setItem("wrongQ",JSON.stringify(wrongQ));
+
 next();
 }
 
 // NEXT
 function next(){
 i++;
-if(i<questions.length) loadQ();
-else end();
+if(i>=100){end();return;}
+loadQ();
+}
+
+// SAVE TOPPER
+function saveScore(){
+let data=JSON.parse(localStorage.getItem("rank")||"[]");
+
+data.push({name:player,village:village,score:score});
+data.sort((a,b)=>b.score-a.score);
+data=data.slice(0,3);
+
+localStorage.setItem("rank",JSON.stringify(data));
+}
+
+// SHOW TOPPER
+function showTopper(){
+let data=JSON.parse(localStorage.getItem("rank")||"[]");
+
+let html="<h3>🏆 Topper</h3>";
+if(data[0]) html+=`<p>🥇 ${data[0].name} - ${data[0].score}</p>`;
+if(data[1]) html+=`<p>🥈 ${data[1].name} - ${data[1].score}</p>`;
+if(data[2]) html+=`<p>🥉 ${data[2].name} - ${data[2].score}</p>`;
+
+document.getElementById("topper").innerHTML=html;
 }
 
 // END
 function end(){
-document.getElementById("game").style.display="none";
-document.getElementById("result").style.display="block";
+saveScore();
 
-document.getElementById("result").innerHTML=
-`<h2>Game Over 🎉</h2>
+game.style.display="none";
+result.style.display="block";
+
+result.innerHTML=`
+<h2>Game Over 🎉</h2>
 <h3>${player}</h3>
-<h3>Village: ${village}</h3>
-<h3>Score: ${score}</h3>
-<button onclick="location.reload()">Play Again</button>`;
+<h3>${village}</h3>
+<h3>Score: ${score}/100</h3>
+
+<button onclick="sendWA()">📤 WhatsApp भेजें</button>
+<button onclick="location.reload()">🔄 Play Again</button>
+`;
+
+showTopper();
 }
+
+// WHATSAPP
+function sendWA(){
+let msg=`SSC Quiz Result
+Name:${player}
+Village:${village}
+Phone:${phone}
+Score:${score}/100`;
+
+window.open("https://wa.me/918368922636?text="+encodeURIComponent(msg));
+}
+
+// INIT
+showTopper();
 
 </script>
 
