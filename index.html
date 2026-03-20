@@ -26,17 +26,17 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 
 <div id="game" class="box" style="display:none;">
 <h3 id="q"></h3>
-<button onclick="ans(0)" id="o0"></button>
 <button onclick="ans(1)" id="o1"></button>
 <button onclick="ans(2)" id="o2"></button>
 <button onclick="ans(3)" id="o3"></button>
+<button onclick="ans(4)" id="o4"></button>
 <h3 id="timer"></h3>
 <h3 id="score"></h3>
 <h3 id="level"></h3>
 </div>
 
-<div id="result" class="box" style="display:none;"></div>
-<div id="topper" class="box"></div>
+<div> id="result" class="box" style="display:none;"></div>
+<div> id="topper" class="box"></div>
 
 <script>
 
@@ -105,7 +105,6 @@ let player = document.getElementById("playerName").value.trim();
 let village = document.getElementById("playerVillage").value.trim();
 let phone = document.getElementById("playerPhone").value.trim();
 
-// 👇 यही यहाँ डालना है
 alert(player + " | " + village + " | " + phone);
 
 if(player==="" || village==="" || phone===""){
@@ -180,9 +179,9 @@ function showTopper(){
 let data=JSON.parse(localStorage.getItem("rank")||"[]");
 
 let html="<h3>🏆 Topper</h3>";
-if(data[0]) html+=`<p>🥇 ${data[0].name} - ${data[0].score}</p>`;
-if(data[1]) html+=`<p>🥈 ${data[1].name} - ${data[1].score}</p>`;
-if(data[2]) html+=`<p>🥉 ${data[2].name} - ${data[2].score}</p>`;
+if(data[1]) html+=`<p>🥇 ${data[1].name} - ${data[0].score}</p>`;
+if(data[2]) html+=`<p>🥈 ${data[2].name} - ${data[1].score}</p>`;
+if(data[3]) html+=`<p>🥉 ${data[3].name} - ${data[2].score}</p>`;
 
 document.getElementById("topper").innerHTML=html;
 }
