@@ -99,24 +99,24 @@ finalQ.push(q);
 let i=0,score=0,t=10,timer;
 let player="",village="",phone="";
 
-// START
 function startGame(){
-player=document.getElementById("playerName").value;
-village=document.getElementById("village").value;
-phone=document.getElementById("phone").value;
 
-if(!player||!village||!phone){alert("सभी जानकारी भरें");return;}
+let player = document.getElementById("playerName").value.trim();
+let village = document.getElementById("playerVillage").value.trim();
+let phone = document.getElementById("playerPhone").value.trim();
 
+// 👇 यही यहाँ डालना है
+alert(player + " | " + village + " | " + phone);
+
+if(player==="" || village==="" || phone===""){
+alert("सभी जानकारी भरें");
+return;
+}
 finalQ.sort(()=>Math.random()-0.5);
-
-start.style.display="none";
-game.style.display="block";
-
+document.getElementById("start").style.display="none";
+document.getElementById("game").style.display="block";
 loadQ();
 }
-
-// LOAD
-function loadQ(){
 let q=finalQ[i];
 q && (document.getElementById("q").innerText=q.q);
 
