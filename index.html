@@ -45,6 +45,28 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 
 <script>
 
+  function loadQ(){
+
+used5050 = false;
+
+let q = questions[i];
+
+document.getElementById("q").innerText = q.q;
+
+// options set करो
+for(let x=0;x<4;x++){
+let btn = document.getElementById("o"+x);
+btn.innerText = q.o[x];
+btn.style.display = "block";
+}
+
+document.getElementById("life").disabled = false;
+
+document.getElementById("score").innerText="Score: "+score;
+document.getElementById("level").innerText="Question: "+(i+1);
+
+startTimer();
+  }
   function saveTopper(){
 
 let data = JSON.parse(localStorage.getItem("topper") || "[]");
@@ -255,18 +277,7 @@ Score: ${score}/${questions.length}`;
 let url = "https://wa.me/918368922636?text=" + encodeURIComponent(msg);
 
 window.open(url,"_blank");
-}
-  function sendWA(){
-
-let msg=`SSC Quiz Result 🎯
-Name: ${player}
-Village: ${village}
-Score: ${score}/${questions.length}`;
-
-let url = "https://wa.me/918368922636?text=" + encodeURIComponent(msg);
-
-window.open(url,"_blank");
-}
+  }
 
   function use5050(){
 
@@ -276,16 +287,6 @@ return;
 }
 
 used5050 = true;
-
-for(let x=0;x<4;x++){
-if(x !== correct && removed < 2){
-document.getElementById("o"+x).style.display="none";
-removed++;
-}
-}
-
-document.getElementById("life").disabled = true;
-}
 
 let correct = questions[i].a;
 let removed = 0;
