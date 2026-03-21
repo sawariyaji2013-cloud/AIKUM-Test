@@ -27,6 +27,8 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 <div id="game" class="box" style="display:none;">
 <h3 id="q"></h3>
 
+<div id="topper" class="box"></div>
+  
   <button onclick="use5050()" id="life">🎮 50-50 Lifeline</button>
 
 
@@ -43,6 +45,22 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 <div id="result" class="box" style="display:none;"></div>
 
 <script>
+
+  function saveTopper(){
+
+let data = JSON.parse(localStorage.getItem("topper") || "[]");
+
+data.push({
+name: player,
+village: village,
+score: score
+});
+
+data.sort((a,b)=>b.score-a.score);
+data = data.slice(0,3);
+
+localStorage.setItem("topper", JSON.stringify(data));
+}
 
 // QUESTIONS
   
@@ -124,6 +142,21 @@ document.getElementById("game").style.display="block";
 
 loadQ();
 }
+
+  function showTopper(){
+
+let data = JSON.parse(localStorage.getItem("topper") || "[]");
+
+let html = "<h3>🏆 Topper List</h3>";
+
+data.forEach((x,i)=>{
+html += `<p>${i+1}. ${x.name} (${x.village}) - ${x.score}</p>`;
+});
+
+document.getElementById("topper").innerHTML = html;
+}
+
+  
   for(let x=0;x<4;x++){
 let btn = document.getElementById("o"+x);
 btn.innerText = q.o[x];
@@ -187,7 +220,7 @@ loadQ();
 function end(){
 document.getElementById("game").style.display="none";
 document.getElementById("result").style.display="block";
-
+  
 document.getElementById("result").innerHTML=`
 <h2>Game Over 🎉</h2>
 <h3>${player}</h3>
@@ -198,6 +231,25 @@ document.getElementById("result").innerHTML=`
 `;
 }
 function sendWA(){
+
+  function end(){
+
+    saveTopper();
+showTopper();
+    
+document.getElementById("game").style.display="none";
+document.getElementById("result").style.display="block";
+
+document.getElementById("result").innerHTML=`
+<h2>Game Over 🎉</h2>
+<h3>${player}</h3>
+<h3>${village}</h3>
+<h3>Score: ${score}/${questions.length}</h3>
+
+<button onclick="sendWA()">📲 WhatsApp भेजें</button>
+<button onclick="location.reload()">🔄 Play Again</button>
+`;
+}
 
 let msg=`SSC Quiz Result 🎯
 Name: ${player}
