@@ -160,9 +160,7 @@ document.getElementById("topper").innerHTML = html;
 let btn = document.getElementById("o"+x);
 btn.innerText = q.o[x];
 btn.style.display = "block"; // 👈 जरूरी
-}
-
-// LOAD QUESTIONfunction loadQ(){
+  }
 
 used5050 = false;
 
@@ -231,8 +229,6 @@ document.getElementById("result").innerHTML=`
 }
 function sendWA(){
 
-  function end(){
-
 saveTopper();
 showTopper();
 
@@ -280,9 +276,6 @@ return;
 }
 
 used5050 = true;
-
-let correct = questions[i].a;
-let removed = 0;
 
 for(let x=0;x<4;x++){
 if(x !== correct && removed < 2){
