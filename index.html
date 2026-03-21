@@ -27,6 +27,9 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 <div id="game" class="box" style="display:none;">
 <h3 id="q"></h3>
 
+  <button onclick="use5050()" id="life">🎮 50-50 Lifeline</button>
+
+
 <button onclick="ans(0)" id="o0"></button>
 <button onclick="ans(1)" id="o1"></button>
 <button onclick="ans(2)" id="o2"></button>
@@ -102,6 +105,8 @@ questions = questions.slice(0,100);
 let i=0,score=0,timer,t=10;
 let player="",village="",phone="";
 
+  let used5050 = false;
+
 // START GAME
 function startGame(){
 console.log("Total Questions:", questions.length);
@@ -118,6 +123,11 @@ document.getElementById("start").style.display="none";
 document.getElementById("game").style.display="block";
 
 loadQ();
+}
+  for(let x=0;x<4;x++){
+let btn = document.getElementById("o"+x);
+btn.innerText = q.o[x];
+btn.style.display = "block"; // 👈 जरूरी
 }
 
 // LOAD QUESTION
@@ -187,7 +197,51 @@ document.getElementById("result").innerHTML=`
 <button onclick="location.reload()">🔄 Play Again</button>
 `;
 }
+function sendWA(){
 
+let msg=`SSC Quiz Result 🎯
+Name: ${player}
+Village: ${village}
+Score: ${score}/${questions.length}`;
+
+// 👇 आपका नंबर (91 + नंबर)
+let url = "https://wa.me/918368922636?text=" + encodeURIComponent(msg);
+
+window.open(url,"_blank");
+}
+  function sendWA(){
+
+let msg=`SSC Quiz Result 🎯
+Name: ${player}
+Village: ${village}
+Score: ${score}/${questions.length}`;
+
+let url = "https://wa.me/?text=" + encodeURIComponent(msg);
+
+window.open(url,"_blank");
+}
+
+  function use5050(){
+
+if(used5050){
+alert("50-50 पहले ही use हो चुका है");
+return;
+}
+
+used5050 = true;
+
+let correct = questions[i].a;
+let removed = 0;
+
+for(let x=0;x<4;x++){
+if(x !== correct && removed < 2){
+document.getElementById("o"+x).style.display="none";
+removed++;
+}
+}
+
+document.getElementById("life").disabled = true;
+}
 </script>
 
 </body>
