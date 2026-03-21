@@ -26,8 +26,6 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 
 <div id="game" class="box" style="display:none;">
 <h3 id="q"></h3>
-
-<div id="topper" class="box"></div>
   
   <button onclick="use5050()" id="life">🎮 50-50 Lifeline</button>
 
@@ -43,6 +41,7 @@ input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
 </div>
 
 <div id="result" class="box" style="display:none;"></div>
+  <div id="topper" class="box"></div>
 
 <script>
 
@@ -163,23 +162,15 @@ btn.innerText = q.o[x];
 btn.style.display = "block"; // 👈 जरूरी
 }
 
-// LOAD QUESTION
-function loadQ(){
-function loadQ(){
+// LOAD QUESTIONfunction loadQ(){
 
-used5050 = false; // 👈 हर नए सवाल पर reset
+used5050 = false;
 
 let q=questions[i];
 
 document.getElementById("q").innerText=q.q;
 
-for(let x=0;x<4;x++){
-let btn = document.getElementById("o"+x);
-btn.innerText=q.o[x];
-btn.style.display="block"; // 👈 सभी option वापस दिखाओ
-}
-
-document.getElementById("life").disabled = false; // 👈 button फिर से enable
+document.getElementById("life").disabled = false;
 
 document.getElementById("score").innerText="Score: "+score;
 document.getElementById("level").innerText="Question: "+(i+1);
@@ -242,9 +233,9 @@ function sendWA(){
 
   function end(){
 
-    saveTopper();
+saveTopper();
 showTopper();
-    
+
 document.getElementById("game").style.display="none";
 document.getElementById("result").style.display="block";
 
@@ -276,7 +267,7 @@ Name: ${player}
 Village: ${village}
 Score: ${score}/${questions.length}`;
 
-let url = "https://wa.me/?text=" + encodeURIComponent(msg);
+let url = "https://wa.me/918368922636?text=" + encodeURIComponent(msg);
 
 window.open(url,"_blank");
 }
@@ -302,15 +293,6 @@ removed++;
 
 document.getElementById("life").disabled = true;
 }
-
-  function use5050(){
-
-if(used5050){
-alert("50-50 पहले ही use हो चुका है");
-return;
-}
-
-used5050 = true;
 
 let correct = questions[i].a;
 let removed = 0;
