@@ -165,13 +165,21 @@ btn.style.display = "block"; // 👈 जरूरी
 
 // LOAD QUESTION
 function loadQ(){
+function loadQ(){
+
+used5050 = false; // 👈 हर नए सवाल पर reset
+
 let q=questions[i];
 
 document.getElementById("q").innerText=q.q;
 
 for(let x=0;x<4;x++){
-document.getElementById("o"+x).innerText=q.o[x];
+let btn = document.getElementById("o"+x);
+btn.innerText=q.o[x];
+btn.style.display="block"; // 👈 सभी option वापस दिखाओ
 }
+
+document.getElementById("life").disabled = false; // 👈 button फिर से enable
 
 document.getElementById("score").innerText="Score: "+score;
 document.getElementById("level").innerText="Question: "+(i+1);
