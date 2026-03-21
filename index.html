@@ -284,6 +284,28 @@ window.open(url,"_blank");
   function use5050(){
 
 if(used5050){
+alert("इस प्रश्न पर पहले ही use हो चुका है");
+return;
+}
+
+used5050 = true;
+
+let correct = questions[i].a;
+let removed = 0;
+
+for(let x=0;x<4;x++){
+if(x !== correct && removed < 2){
+document.getElementById("o"+x).style.display="none";
+removed++;
+}
+}
+
+document.getElementById("life").disabled = true;
+}
+
+  function use5050(){
+
+if(used5050){
 alert("50-50 पहले ही use हो चुका है");
 return;
 }
