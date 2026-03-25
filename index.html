@@ -1,121 +1,140 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>AIKUM SSC Quiz</title>
+<title>AIKUM SSC PRO Quiz</title>
 
 <style>
-body{font-family:sans-serif;background:#0b2a3a;color:#fff;text-align:center;}
-.box{background:#123e5a;padding:20px;margin:15px;border-radius:10px;}
-button{padding:12px;margin:5px;width:90%;background:orange;border:none;color:#fff;font-size:16px;border-radius:5px;}
-input{padding:12px;margin:5px;width:90%;border-radius:5px;border:none;}
+body {font-family: Arial; background:#0c1b2a; color:white; text-align:center;}
+.box {background:#1e3a5f; padding:20px; margin:20px auto; width:340px; border-radius:10px;}
+button {margin:6px; padding:10px; width:90%; background:orange; border:none; color:white;}
+input {padding:10px; margin:5px; width:90%;}
 </style>
+
 </head>
 
 <body>
 
-<div id="start" class="box">
-<h2>🇮🇳 AIKUM SSC Quiz 🎯</h2>
+<h2>🏆 AIKUM SSC PRO QUIZ</h2>
 
-<input id="playerName" type="text" placeholder="आपका नाम">
-<input id="village" type="text" placeholder="गांव का नाम">
-<input id="phone" type="tel" placeholder="मोबाइल नंबर">
-
+<div class="box" id="start">
+<input id="name" placeholder="Name"><br>
+<input id="village" placeholder="Village"><br>
 <button onclick="startGame()">Start Game</button>
 </div>
 
-<div id="game" class="box" style="display:none;">
+<div class="box" id="game" style="display:none;">
 <h3 id="q"></h3>
 
-<button onclick="use5050()" id="life">🎮 50-50 Lifeline</button>
+<button id="o0" onclick="answer(0)"></button>
+<button id="o1" onclick="answer(1)"></button>
+<button id="o2" onclick="answer(2)"></button>
+<button id="o3" onclick="answer(3)"></button>
 
-<button onclick="ans(0)" id="o0"></button>
-<button onclick="ans(1)" id="o1"></button>
-<button onclick="ans(2)" id="o2"></button>
-<button onclick="ans(3)" id="o3"></button>
+<button onclick="use5050()">50-50 Lifeline</button>
 
 <h3 id="timer"></h3>
 <h3 id="score"></h3>
-<h3 id="level"></h3>
 </div>
 
-<div id="result" class="box" style="display:none;"></div>
-<div id="topper" class="box"></div>
+<div class="box" id="result" style="display:none;"></div>
 
 <script>
 
-// QUESTIONS
-let questions = [
+// DEFAULT QUESTIONS
+let defaultQ=[
+{q:"दिल्ली सल्तनत की स्थापना किसने की?", o:["कुतुबुद्दीन ऐबक","इल्तुतमिश","मुहम्मद गौरी","बलबन"], a:0},
 
-{q:"भारत का संविधान कब लागू हुआ?",o:["1947","1950","1949","1952"],a:1},
-{q:"भारत की राजधानी क्या है?",o:["मुंबई","दिल्ली","कोलकाता","चेन्नई"],a:1},
-{q:"UNO का मुख्यालय कहाँ है?",o:["लंदन","न्यूयॉर्क","पेरिस","जिनेवा"],a:1},
-{q:"गुरुत्वाकर्षण की खोज किसने की?",o:["न्यूटन","आइंस्टीन","गैलीलियो","केप्लर"],a:0},
-{q:"भारत का राष्ट्रीय पशु कौन है?",o:["हाथी","शेर","बाघ","घोड़ा"],a:2},
+{q:"इल्तुतमिश ने किसे अपना उत्तराधिकारी घोषित किया था?", o:["रुक्नुद्दीन फिरोज","रजिया सुल्तान","नसीरुद्दीन महमूद","बलबन"], a:1},
 
-{q:"15×4=?",o:["50","55","60","65"],a:2},
-{q:"144÷12=?",o:["10","11","12","13"],a:2},
-{q:"25+75=?",o:["90","95","100","110"],a:2},
-{q:"7×8=?",o:["54","56","58","60"],a:1},
-{q:"81÷9=?",o:["8","9","7","6"],a:1},
+{q:"दिल्ली सल्तनत का पहला वास्तविक शासक किसे माना जाता है?", o:["कुतुबुद्दीन ऐबक","इल्तुतमिश","बलबन","अलाउद्दीन खिलजी"], a:1},
 
-{q:"भारत का पहला राष्ट्रपति कौन था?",o:["नेहरू","गांधी","राजेंद्र प्रसाद","पटेल"],a:2},
-{q:"भारत का पहला प्रधानमंत्री कौन था?",o:["नेहरू","गांधी","पटेल","राजेंद्र"],a:0},
-{q:"राष्ट्रीय पक्षी कौन है?",o:["तोता","मोर","कौआ","हंस"],a:1},
-{q:"राष्ट्रीय फूल कौन सा है?",o:["गुलाब","कमल","चंपा","मोगरा"],a:1},
-{q:"राष्ट्रीय खेल कौन सा है?",o:["क्रिकेट","हॉकी","फुटबॉल","कबड्डी"],a:1},
+{q:"'चालीसा' (Turkan-e-Chihalgani) की स्थापना किसने की?", o:["इल्तुतमिश","बलबन","रजिया","फिरोज तुगलक"], a:0},
 
-{q:"कंप्यूटर का जनक कौन है?",o:["न्यूटन","चार्ल्स बैबेज","एडिसन","ट्यूरिंग"],a:1},
-{q:"CPU का full form क्या है?",o:["Central Processing Unit","Control Unit","Central Unit","None"],a:0},
-{q:"RAM का full form?",o:["Random Access Memory","Run Memory","Read Memory","None"],a:0},
-{q:"1 km = ?",o:["100 m","500 m","1000 m","1500 m"],a:2},
-{q:"pH value of water?",o:["7","5","9","10"],a:0},
+{q:"रजिया सुल्तान किस वंश से संबंधित थी?", o:["खिलजी","गुलाम","तुगलक","लोदी"], a:1},
 
-{q:"सबसे बड़ा ग्रह कौन सा है?",o:["पृथ्वी","मंगल","बृहस्पति","शुक्र"],a:2},
-{q:"सबसे छोटा ग्रह कौन सा है?",o:["बुध","मंगल","शुक्र","पृथ्वी"],a:0},
-{q:"लाल ग्रह किसे कहते हैं?",o:["मंगल","शुक्र","बुध","शनि"],a:0},
-{q:"सूर्य किस प्रकार का तारा है?",o:["लाल","पीला","नीला","सफेद"],a:1},
-{q:"CO2 क्या है?",o:["ऑक्सीजन","कार्बन डाइऑक्साइड","नाइट्रोजन","हाइड्रोजन"],a:1},
+{q:"बलबन ने कौन सी नीति अपनाई थी?", o:["सुलह-ए-कुल","लौह एवं रक्त नीति","दीन-ए-इलाही","इक्तादारी"], a:1},
 
-// 🔥 नीचे और जोड़ रहे हैं (100 पूरा करने के लिए)
+{q:"'नौकरशाही का जनक' किसे कहा जाता है?", o:["इल्तुतमिश","बलबन","अलाउद्दीन खिलजी","फिरोज तुगलक"], a:2},
 
-{q:"20×5=?",o:["80","90","100","110"],a:2},
-{q:"200÷4=?",o:["40","45","50","55"],a:2},
-{q:"121÷11=?",o:["10","11","12","13"],a:1},
-{q:"30×3=?",o:["60","70","80","90"],a:3},
-{q:"1000÷10=?",o:["10","50","100","150"],a:2},
+{q:"अलाउद्दीन खिलजी का बाजार नियंत्रण किस उद्देश्य से था?", o:["राजस्व बढ़ाने के लिए","सेना को सस्ता सामान देने के लिए","धर्म प्रचार के लिए","विदेश व्यापार के लिए"], a:1},
 
-{q:"भारत का सर्वोच्च न्यायालय कहाँ है?",o:["दिल्ली","मुंबई","कोलकाता","चेन्नई"],a:0},
-{q:"लोकसभा में कितने सदस्य होते हैं?",o:["545","500","550","530"],a:0},
-{q:"राज्यसभा की अधिकतम सदस्य संख्या?",o:["250","300","200","150"],a:0},
-{q:"भारत का राष्ट्रीय गीत?",o:["जन गण मन","वंदे मातरम","सारे जहाँ","None"],a:1},
-{q:"ISRO कहाँ स्थित है?",o:["दिल्ली","मुंबई","बेंगलुरु","चेन्नई"],a:2},
+{q:"अलाउद्दीन खिलजी ने दक्षिण भारत में पहला आक्रमण किस पर किया?", o:["देवगिरी","वारंगल","मदुरै","कांची"], a:0},
 
-// 👉 ऐसे ही continue करके total 100 बना रहा हूँ
+{q:"मालिक काफूर किस शासक का सेनापति था?", o:["बलबन","अलाउद्दीन खिलजी","मुहम्मद बिन तुगलक","फिरोज तुगलक"], a:1},
+
+{q:"मुहम्मद बिन तुगलक ने राजधानी कहाँ स्थानांतरित की थी?", o:["दिल्ली से आगरा","दिल्ली से दौलताबाद","दिल्ली से लाहौर","दिल्ली से जयपुर"], a:1},
+
+{q:"टोकन मुद्रा किसने चलाई?", o:["अलाउद्दीन खिलजी","फिरोज तुगलक","मुहम्मद बिन तुगलक","बलबन"], a:2},
+
+{q:"मुहम्मद बिन तुगलक की कौन सी योजना असफल रही?", o:["राजधानी परिवर्तन","टोकन मुद्रा","दोनों","कोई नहीं"], a:2},
+
+{q:"फिरोज तुगलक ने कौन सा कर समाप्त किया?", o:["जजिया","खराज","गृह कर","कृषि कर"], a:2},
+
+{q:"फिरोज तुगलक ने कितने नए शहर बसाए?", o:["2","4","10","50"], a:1},
+
+{q:"लोदी वंश का संस्थापक कौन था?", o:["बहलोल लोदी","सिकंदर लोदी","इब्राहिम लोदी","खिज्र खां"], a:0},
+
+{q:"दिल्ली सल्तनत का अंतिम शासक कौन था?", o:["इब्राहिम लोदी","सिकंदर लोदी","बहलोल लोदी","बाबर"], a:0},
+
+{q:"पहली पानीपत की लड़ाई किसके बीच हुई?", o:["बाबर और इब्राहिम लोदी","बाबर और राणा सांगा","अकबर और हेमू","हुमायूं और शेरशाह"], a:0},
+
+{q:"'इक्ता प्रणाली' किससे संबंधित है?", o:["राजस्व व्यवस्था","सैन्य व्यवस्था","न्याय व्यवस्था","धार्मिक व्यवस्था"], a:0},
+
+{q:"नसीरुद्दीन महमूद किसका पुत्र था?", o:["इल्तुतमिश","बलबन","अलाउद्दीन","फिरोज"], a:0},
+
+{q:"'दारुल इस्लाम' की अवधारणा किस काल में प्रमुख थी?", o:["गुलाम वंश","खिलजी वंश","तुगलक वंश","लोदी वंश"], a:0},
+
+{q:"अलाउद्दीन खिलजी का राजस्व सुधार किस क्षेत्र में था?", o:["दोआब","राजस्थान","बंगाल","गुजरात"], a:0},
+
+{q:"बलबन ने 'नियाबत-ए-खुदाई' की नीति क्यों अपनाई?", o:["धर्म प्रचार के लिए","राजसत्ता मजबूत करने के लिए","व्यापार बढ़ाने के लिए","विद्रोह रोकने के लिए"], a:1},
+
+{q:"मुहम्मद बिन तुगलक का वास्तविक नाम क्या था?", o:["जुना खान","उलुग खान","नसीरुद्दीन","फिरोज"], a:0},
+
+{q:"दिल्ली सल्तनत में 'दीवान-ए-अर्ज' का कार्य क्या था?", o:["वित्त","सेना","न्याय","धर्म"], a:1}
+
 ];
 
-// 100 questions auto
-while(questions.length < 100){
-questions = questions.concat(questions);
+
+// LOAD DATA
+let questions=JSON.parse(localStorage.getItem("questions"))||defaultQ;
+let wrongQ=JSON.parse(localStorage.getItem("wrongQ"))||[];
+let scores=JSON.parse(localStorage.getItem("scores"))||[];
+
+// USER AUTO LOAD
+if(localStorage.getItem("user")){
+let u=JSON.parse(localStorage.getItem("user"));
+document.getElementById("name").value=u.name;
+document.getElementById("village").value=u.village;
 }
-questions = questions.slice(0,100);
 
-// VARIABLES
 let i=0,score=0,timer,t=10;
-let player="",village="",phone="";
-let used5050 = false;
+let used5050=false;
 
-// START GAME
+// START
 function startGame(){
 
-player=document.getElementById("playerName").value.trim();
-village=document.getElementById("village").value.trim();
-phone=document.getElementById("phone").value.trim();
+let name=document.getElementById("name").value;
+let village=document.getElementById("village").value;
 
-if(player==="" || village==="" || phone===""){
-alert("सभी जानकारी भरें");
+if(name==""||village==""){
+alert("नाम और गांव डालें");
 return;
 }
+
+// SAVE USER
+localStorage.setItem("user",JSON.stringify({name,village}));
+
+// REMOVE DUPLICATE
+questions=removeDuplicate(questions);
+
+// MERGE WRONG QUESTIONS FIRST
+questions=[...wrongQ,...questions];
+
+// SHUFFLE
+questions=shuffle(questions);
+
+// LIMIT
+questions=questions.slice(0,100);
 
 document.getElementById("start").style.display="none";
 document.getElementById("game").style.display="block";
@@ -123,25 +142,39 @@ document.getElementById("game").style.display="block";
 loadQ();
 }
 
-// LOAD QUESTION
-function loadQ(){
-
-used5050 = false;
-
-let q = questions[i];
-
-document.getElementById("q").innerText = q.q;
-
-for(let x=0;x<4;x++){
-let btn = document.getElementById("o"+x);
-btn.innerText = q.o[x];
-btn.style.display = "block";
+// REMOVE DUPLICATE
+function removeDuplicate(arr){
+let unique=[];
+arr.forEach(q=>{
+if(!unique.some(x=>x.q===q.q)){
+unique.push(q);
+}
+});
+localStorage.setItem("questions",JSON.stringify(unique));
+return unique;
 }
 
-document.getElementById("life").disabled = false;
+// SHUFFLE
+function shuffle(arr){
+return arr.sort(()=>Math.random()-0.5);
+}
+
+// LOAD
+function loadQ(){
+
+used5050=false;
+
+let q=questions[i];
+
+document.getElementById("q").innerText=q.q;
+
+for(let x=0;x<4;x++){
+let btn=document.getElementById("o"+x);
+btn.style.display="block";
+btn.innerText=q.o[x];
+}
 
 document.getElementById("score").innerText="Score: "+score;
-document.getElementById("level").innerText="Question: "+(i+1);
 
 startTimer();
 }
@@ -157,117 +190,114 @@ document.getElementById("timer").innerText="Time: "+t;
 
 if(t<=0){
 clearInterval(timer);
+saveWrong();
 next();
 }
 },1000);
 }
 
 // ANSWER
-function ans(x){
+function answer(x){
+
 clearInterval(timer);
 
 if(x===questions[i].a){
 score++;
+}else{
+saveWrong();
 }
 
 next();
 }
 
+// SAVE WRONG
+function saveWrong(){
+wrongQ.push(questions[i]);
+localStorage.setItem("wrongQ",JSON.stringify(wrongQ));
+}
+
 // NEXT
 function next(){
 i++;
-if(i>=questions.length){
-end();
-return;
-}
+if(i<questions.length){
 loadQ();
+}else{
+endGame();
 }
-
-// END
-function end(){
-
-saveTopper();
-showTopper();
-
-document.getElementById("game").style.display="none";
-document.getElementById("result").style.display="block";
-
-document.getElementById("result").innerHTML=`
-<h2>Game Over 🎉</h2>
-<h3>${player}</h3>
-<h3>${village}</h3>
-<h3>Score: ${score}/${questions.length}</h3>
-
-<button onclick="sendWA()">📲 WhatsApp भेजें</button>
-<button onclick="location.reload()">🔄 Play Again</button>
-`;
 }
 
 // 50-50
 function use5050(){
 
-if(used5050){
-alert("इस प्रश्न पर पहले ही use हो चुका है");
-return;
-}
+if(used5050) return;
+used5050=true;
 
-used5050 = true;
+let correct=questions[i].a;
 
-let correct = questions[i].a;
-let removed = 0;
+let removed=0;
 
 for(let x=0;x<4;x++){
-if(x !== correct && removed < 2){
+if(x!==correct && removed<2){
 document.getElementById("o"+x).style.display="none";
 removed++;
 }
 }
+}
 
-document.getElementById("life").disabled = true;
+// END
+function endGame(){
+
+saveScore();
+
+document.getElementById("game").style.display="none";
+document.getElementById("result").style.display="block";
+
+let user=JSON.parse(localStorage.getItem("user"));
+
+document.getElementById("result").innerHTML=`
+<h2>🎉 Game Over</h2>
+<h3>${user.name}</h3>
+<h3>${user.village}</h3>
+<h3>Score: ${score}</h3>
+
+<button onclick="shareWhatsApp()">📲 Share</button>
+
+${leaderboard(user.village)}
+
+<button onclick="location.reload()">Play Again</button>
+`;
+}
+
+// SAVE SCORE
+function saveScore(){
+let user=JSON.parse(localStorage.getItem("user"));
+scores.push({name:user.name,village:user.village,score:score});
+localStorage.setItem("scores",JSON.stringify(scores));
+}
+
+// LEADERBOARD
+function leaderboard(village){
+
+let data=scores.filter(d=>d.village==village);
+data.sort((a,b)=>b.score-a.score);
+
+let html="<h3>🏆 Leaderboard</h3>";
+
+data.slice(0,5).forEach((d,i)=>{
+html+=`<p>${i+1}. ${d.name} - ${d.score}</p>`;
+});
+
+return html;
 }
 
 // WHATSAPP
-function sendWA(){
+function shareWhatsApp(){
+let user=JSON.parse(localStorage.getItem("user"));
 
-let msg=`SSC Quiz Result 🎯
-Name: ${player}
-Village: ${village}
-Score: ${score}/${questions.length}`;
+let msg=`मैंने AIKUM SSC Quiz में ${score} score किया 💪🔥
+आप भी खेलें 👉 https://sawariyaji2013-cloud.github.io/AIKUM-Test/`;
 
-let url = "https://wa.me/918368922636?text=" + encodeURIComponent(msg);
-
-window.open(url,"_blank");
-}
-
-// TOPPER SAVE
-function saveTopper(){
-
-let data = JSON.parse(localStorage.getItem("topper") || "[]");
-
-data.push({
-name: player,
-village: village,
-score: score
-});
-
-data.sort((a,b)=>b.score-a.score);
-data = data.slice(0,3);
-
-localStorage.setItem("topper", JSON.stringify(data));
-}
-
-// SHOW TOPPER
-function showTopper(){
-
-let data = JSON.parse(localStorage.getItem("topper") || "[]");
-
-let html = "<h3>🏆 Topper List</h3>";
-
-data.forEach((x,i)=>{
-html += `<p>${i+1}. ${x.name} (${x.village}) - ${x.score}</p>`;
-});
-
-document.getElementById("topper").innerHTML = html;
+window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
 }
 
 </script>
